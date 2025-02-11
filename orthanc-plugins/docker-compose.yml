@@ -1,0 +1,59 @@
+version: "3.3"
+
+services:
+  orthanc:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: orthanc-server
+    ports:
+      - "127.0.0.1:4242:4242"
+      - "127.0.0.1:8042:8042"
+    volumes:
+      - orthanc_storage:/var/lib/orthanc/storage
+      - orthanc_db:/var/lib/orthanc/db
+      - ./orthanc.json:/etc/orthanc/orthanc.json:ro
+    environment:
+      - MALLOC_ARENA_MAX=5
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8042/system"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - orthanc_network
+
+  postgres:
+    image: postgres:14
+    container_name: orthanc-postgres
+    environment:
+      - POSTGRES_DB=orthanc
+      - POSTGRES_USER=orthanc
+      - POSTGRES_PASSWORD=orthanc
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U orthanc"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - orthanc_network
+
+volumes:
+  orthanc_storage:
+    driver: local
+  orthanc_db:
+    driver: local
+  postgres_data:
+    driver: local
+
+networks:
+  orthanc_network:
+    driver: bridge

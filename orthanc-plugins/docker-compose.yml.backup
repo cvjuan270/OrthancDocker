@@ -1,0 +1,36 @@
+version: "3.3"
+
+services:
+  orthanc:
+    # image: jodogne/orthanc:1.12.6 # O la versión más reciente
+    # image: my-orthanc # O la versión más reciente
+    build:
+        context: .
+        dockerfile: Dockerfile
+    container_name: orthanc-server
+    ports:
+      - "4242:4242" # Puerto DICOM
+      - "8042:8042" # Puerto web
+    volumes:
+      - orthanc_data:/var/lib/orthanc/db # Volumen para la base de datos
+      - orthanc_storage:/var/lib/orthanc/storage # Volumen para los archivos DICOM
+    environment:
+      MALLOC_ARENA_MAX: 5 # Ajuste de memoria (si es necesario)
+    depends_on:
+      - postgres # Dependencia de PostgreSQL
+    restart: always
+
+  postgres:
+    image: postgres:14 # O la versión que prefieras
+    environment:
+      POSTGRES_USER: orthanc
+      POSTGRES_PASSWORD: orthanc  # Cambia esto por una contraseña real
+      POSTGRES_DB: orthanc
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # Volumen para los datos de PostgreSQL
+    restart: always
+
+volumes:
+  orthanc_data:
+  orthanc_storage:
+  postgres_data:

@@ -1,0 +1,50 @@
+{
+  "Name": "ORTHANC_PROD",
+  "StorageDirectory": "/var/lib/orthanc/storage",
+  "IndexDirectory": "/var/lib/orthanc/db",
+  
+  "PostgreSQL": {
+    "EnableIndex": true,
+    "EnableStorage": false,
+    "Host": "postgres",
+    "Port": 5432,
+    "Database": "orthanc",
+    "Username": "orthanc",
+    "Password": "orthanc",
+    "EnableSsl": false
+  },
+
+  "HttpPort": 8042,
+  "DicomPort": 4242,
+  "RemoteAccessAllowed": false,
+  "SslEnabled": false,
+  
+  "DicomAet": "ORTHANC",
+  
+  "DicomModalities": {},
+
+  "DicomWeb": {
+    "Enable": true,
+    "Root": "/dicom-web/"
+  },
+
+  "Authentication": {
+    "EnableUserAuthentication": true,
+    "RegisteredUsers": {
+      "admin": "orthanc"
+    }
+  },
+
+  "MaximumStorageSize": "0",
+  "MaximumPatientCount": "0",
+  "StorageCompression": true,
+  "StoreDicom": true,
+  
+  "ConcurrentJobs": 4,
+  "HttpThreadsCount": 50,
+
+  "Plugins": [
+    "/usr/share/orthanc/plugins/libOrthancPostgreSQLIndex.so",
+    "/usr/share/orthanc/plugins/libOrthancDicomWeb.so"
+  ]
+}
