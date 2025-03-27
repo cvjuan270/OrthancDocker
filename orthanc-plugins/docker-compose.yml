@@ -1,22 +1,22 @@
 version: "3.3"
 
 services:
-  orthanc:
+  orthanc-cms:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: orthanc-server
+    container_name: orthanc-server-cms
     ports:
       - "127.0.0.1:4242:4242"
       - "127.0.0.1:8042:8042"
     volumes:
-      - orthanc_storage:/var/lib/orthanc/storage
-      - orthanc_db:/var/lib/orthanc/db
+      - orthanc_storage-cms:/var/lib/orthanc/storage
+      - orthanc_db-cms:/var/lib/orthanc/db
       - ./orthanc.json:/etc/orthanc/orthanc.json:ro
     environment:
       - MALLOC_ARENA_MAX=5
     depends_on:
-      - postgres
+      - postgres-cms
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8042/system"]
@@ -26,9 +26,9 @@ services:
     networks:
       - orthanc_network
 
-  postgres:
+  postgres-cms:
     image: postgres:14
-    container_name: orthanc-postgres
+    container_name: orthanc-postgres-cms
     environment:
       - POSTGRES_DB=orthanc
       - POSTGRES_USER=orthanc
@@ -36,7 +36,7 @@ services:
     ports:
       - "127.0.0.1:5433:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data-cms:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U orthanc"]
       interval: 10s
@@ -47,11 +47,11 @@ services:
       - orthanc_network
 
 volumes:
-  orthanc_storage:
+  orthanc_storage-cms:
     driver: local
-  orthanc_db:
+  orthanc_db-cms:
     driver: local
-  postgres_data:
+  postgres_data-cms:
     driver: local
 
 networks:
